@@ -46,14 +46,25 @@ class ChampionIcon extends Component {
     var i = this.props.player;
 
     return(
-      <circle className={i < 6 ? "championIconBlue" : "championIconRed"} fill={`http://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png`} style={{
-        left: (liveData.playerStats[i].x * 100 / 14000) + "%",
-        bottom: (liveData.playerStats[i].y * 100 / 14000) + "%",
-        filter: liveData.playerStats[i].h === 0 ? "grayscale(75%)" : "none",
-        background: `url(http://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png)`,
-        backgroundSize: "120%",
-        backgroundPosition: "center",
-      }}></circle>
+      <g>
+        <defs>
+          <pattern height="100%" viewBox="0 0 30 30" width="100%" x="0" y="0" id={`icon-${liveData.playerStats[i].championName}`}>
+            <image _ngcontent-c5="" height="34" width="34" x="-3" y="-3" xlinkHref={`https://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png`}></image>
+          </pattern>
+        </defs>
+        <circle r="14" strokeWidth="1.5" cy={100- (liveData.playerStats[i].y * 100 / 15000) + "%"} cx={(liveData.playerStats[i].x * 100 / 15000) + "%"} stroke="rgba(58, 171, 195, 0.75)" stroke={i < 6 ? "rgba(48, 169, 222, 0.75)" : "rgba(222, 48, 48, 0.75)"} fill={`url(#icon-${liveData.playerStats[i].championName})`} filter={liveData.playerStats[i].h === 0 ? "url(#grayscale)" : "none"}></circle>
+      </g>
+
+      // <circle className={i < 6 ? "championIconBlue" : "championIconRed"} fill={`http://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png`} style={{
+      //   left: (liveData.playerStats[i].x * 100 / 14000 - 3.5) + "%",
+      //   bottom: (liveData.playerStats[i].y * 100 / 14000 - 3.5) + "%",
+      //   filter: liveData.playerStats[i].h === 0 ? "grayscale(75%)" : "none",
+      //   backgroundImage: `url(http://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png)`,
+      //   backgroundSize: "30px",
+      //   backgroundPosition: "center",
+      //   WebkitTransform: "translate(-80%, 90%)",
+      //   // clear: "both",
+      // }}></circle>
     );
   }
 }
@@ -76,18 +87,22 @@ class Map extends Component {
 
   render() {
     return (
-      <div className="Minimap" style={{
-        background: `url(${minimap})`,
+      <svg className="Minimap" style={{
+        backgroundImage: `url(${minimap})`,
         backgroundRepeat: "no-repeat",
-        width: "500px",
-        height: "500px",
+        backgroundSize: "contain",
+        width: "512px",
+        height: "512px",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         position: "relative"
       }}>
         {this.getIcons()}
-      </div>
+        <filter id="grayscale">
+          <feColorMatrix type="matrix" values="0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0"/>
+        </filter>
+      </svg>
     );
   }
 }
@@ -144,7 +159,7 @@ class App extends Component {
             <div className="centered">
               <Map data={this.state.liveData} />
             </div>
-            <div style={{ fontSize: "1.5em", margin: "10px" }}>In game time: {this.state.liveData.time}</div>
+            <div style={{ fontSize: "1.5em", margin: "10px" }}>{/([A-Z\d]+\|)([A-Z\d]+\|)([A-Z\d]+\|)/.exec(this.state.liveData.generatedName)[0].slice(0,-1).replace("|"," vs ")} In game time: {this.state.liveData.time}</div>
             <div>{JSON.stringify(this.state.liveData, null, 4)}</div>
           </header> : <h1>Loading...</h1>
         }

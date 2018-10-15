@@ -16,7 +16,7 @@ html {
   background-color: #282c34;
   /* min-height: 100vh; */
   /* display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center; */
   /* font-size: calc(10px + 2vmin); */
@@ -28,29 +28,9 @@ html {
 
 .centered {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  /* justify-content: center; */
-}
-
-.championIconBlue {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  -webkit-transform: translate(-70%, 120%);
-  border-radius: 50%;
-  border: solid 2px;
-  border-color: rgba(48, 169, 222, 0.75);
-}
-
-.championIconRed {
-  position: absolute;
-  width: 25px;
-  height: 25px;
-  -webkit-transform: translate(-70%, 120%);
-  border-radius: 50%;
-  border: solid 2px;
-  border-color: rgba(222, 48, 48, 0.75);
+  justify-content: center;
 }
 
 .App-link {
