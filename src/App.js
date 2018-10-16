@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import minimap from './assets/minimap.png';
 import './App.css';
+import resourceBars from './bars.json';
+import request from 'request';
 
 function isObject(item) {
   return (item && typeof item === 'object' && !Array.isArray(item));
@@ -40,23 +42,147 @@ function cTime(millisec) {
   return minutes + ":" + seconds;
 }
 
+class PlayerItems extends Component {
+  state = {
+    itemsData: {},
+    trinket: {}
+  }
+
+  componentDidMount() {
+    request('http://ddragon.leagueoflegends.com/cdn/8.19.1/data/en_US/item.json', { json: true }, (err, res, body) => this.setState({itemsData: body.data}))
+  }
+
+  getItems = () => {
+    var itemBuild = [];
+    var stacks = {}
+    var items = this.props.data.items;
+    var itemSlots = 6;
+    var itemsData = this.state.itemsData;
+    
+    items.sort((a, b) => {
+      return itemsData[b].gold.total-itemsData[a].gold.total
+    });
+
+
+
+    for(let i = 0; i < itemSlots; i++) {
+      // If the item is a trinket it stores it so we can position it differently later
+      if(items[i] === 3363 || items[i] === 3364 || items[i] === 3520 || items[i] === 3340 || items[i] === 3513 || items[i] === 2052) {
+        this.state.trinket= items[i];
+        itemSlots++
+      }
+
+      else {
+        // Bundles items into stacks when applicable
+        if(items[i] !== undefined && itemsData[items[i]].stacks) {
+          if(stacks[items[i]]) stacks[items[i]] --;
+          else stacks[+items[i]] = itemsData[items[i]].stacks --
+
+          let count = items.filter(item => {
+            return item === items[i];
+          }).length;
+
+          if(stacks[items[i]] === itemsData[items[i]].stacks-1) {
+            itemBuild.push(
+              <div className="itemIcon" style={{
+                flexGrow: 1,
+                width: "25%",
+                position: "relative",
+                backgroundImage: `url(https://ddragon.leagueoflegends.com/cdn/8.19.1/img/item/${items[i]}.png)`,
+                backgroundSize: "115%",
+                backgroundPosition: "center",
+                height: "27px",
+                border: "1px solid #555d64",
+              }}>
+                {count > 1 ? <span className="itemNumber">{count}</span> : ""}
+              </div>)
+          }
+          else itemSlots++
+          stacks[items[i]] --;
+        }
+        else itemBuild.push(
+          <div className="itemIcon" style={{
+            flexGrow: 1,
+            width: "25%",
+            position: "relative",
+            backgroundImage: items[i] ? `url(https://ddragon.leagueoflegends.com/cdn/8.19.1/img/item/${items[i]}.png)` : "",
+            backgroundSize: "115%",
+            backgroundPosition: "center",
+            height: "27px",
+            border: "1px solid #555d64",
+          }}></div>
+        // if(items[i] == undefined) itemBuild.push(
+        //   <div className="itemIcon" style={{
+        //     position: "relative",
+        //     height: "20px",
+        //     width: "20px",
+        //     border: "1px solid #555d64",
+        //     content: " ",
+        //   }}> </div>
+        // )
+        )
+      }
+
+    }
+
+    return itemBuild;
+  }
+
+  render() {
+    return(
+      <div>
+        {this.state.itemsData["1001"] ?
+        <div style={{display: "flex"}}>
+          <div className="playerBuild">
+            {this.getItems()}
+          </div>
+          <div style={{
+            flexGrow: 1,
+            width: "25%",
+            position: "relative",
+            marginLeft: "8px",
+          }}>
+            <div className="itemIcon" style={{
+              width: "100%",
+              backgroundImage: `url(https://ddragon.leagueoflegends.com/cdn/8.19.1/img/item/${this.state.trinket}.png)`,
+              backgroundSize: "115%",
+              backgroundPosition: "center",
+              height: "27px",
+              border: "1px solid #555d64",
+            }}></div>
+            <div style={{
+              left: "-3px",
+              position: "absolute",
+              top: "63%",
+            }}>
+              <img src={require('./assets/player-gold.png')} alt="player gold icon" style={{
+                marginRight: "2px",
+                height: "10px",
+              }}></img>
+              {this.props.data.cg}
+            </div>
+          </div>
+        </div>
+        : <h4>Loading...</h4>
+        }
+      </div>
+    )
+  }
+}
+
 class TeamInfo extends Component {
   getPlayers = () => {
     var playerStats = [];
     var liveData = this.props.data;
-    var blue = false
-    if(this.props.side == "blue") {
-      var startNumber = 1;
-      blue = true;
-    } 
-    else var startNumber = 6;
+    if(this.props.side === "blue") var startNumber = 1; 
+    else startNumber = 6;
 
 
     for (var i = startNumber; i < startNumber + 5; i++) {
       
       playerStats.push(
         <div>
-          <h4>{/\ \w+/.exec(liveData.playerStats[i].summonerName)}</h4>
+          <h4>{/ \w+/.exec(liveData.playerStats[i].summonerName)}</h4>
           <div style={{
             display: "flex",
             alignItems: "center",
@@ -76,8 +202,14 @@ class TeamInfo extends Component {
               }}>{liveData.playerStats[i].level}</span>
             </div>
             <div className="championScore" style={{margin: "10px"}}>
-              <img src={require('./assets/kills.png')} height="10px" margin="5px"></img>
-              {` ${liveData.playerStats[i].kills}/${liveData.playerStats[i].deaths}/${liveData.playerStats[i].assists}`}
+              <div>
+                <img src={require('./assets/kills.png')} height="10px" margin="5px" alt="kills icon"></img>
+                {` ${liveData.playerStats[i].kills}/${liveData.playerStats[i].deaths}/${liveData.playerStats[i].assists}`}
+              </div>
+              <div>
+                <img src={require('./assets/minion.png')} height="10px" margin="5px" alt="minions icon"></img>
+                {` ${liveData.playerStats[i].mk}`}
+              </div>
             </div>
           </div>
 
@@ -97,16 +229,60 @@ class TeamInfo extends Component {
               <div style={{
                 height: "15px",
                 width: (liveData.playerStats[i].p * 100 / liveData.playerStats[i].maxPower) + "%",
-                backgroundColor: "#2D8FF3",
+                backgroundColor: this.getResourceBar(i),
               }}/>
-              <div className="barTitle">{`${liveData.playerStats[i].p}/${liveData.playerStats[i].maxPower}`}</div>
+              <div className="barTitle" color="#999999">{`${liveData.playerStats[i].p}/${liveData.playerStats[i].maxPower}`}</div>
             </div>
           </div>
 
+          <div className="items">
+              <PlayerItems data={liveData.playerStats[i]} />
+          </div>
         </div>
       );
     }
     return playerStats;
+  }
+
+  getResourceBar = (i) => {
+    var barColor = "";
+    var champion = this.props.data.playerStats[i].championName;
+    var percentage = this.props.data.playerStats[i].p / this.props.data.playerStats[i].maxPower * 100;
+
+    if(Object.keys(resourceBars).includes(champion)) {
+      var type = resourceBars[champion].type;
+
+      if(type === "akali") {
+        if(percentage >= 90) return barColor = "#f4ac41";
+        else return barColor = "#d6af24";
+      }
+      if(type === "energy") return barColor = "#d6af24"
+      if(type === "gnar") {
+        if(percentage == 100) return barColor = "#B24C45";
+        else return barColor = "#f4cd41";
+      }
+      if(type === "fury") return barColor = "#0A1827";
+      if(type === "renek") {
+        if(percentage >= 50) return barColor = "#A1362F";
+        else return barColor = "#fff";
+      }
+      if(type === "rumble") {
+        if(percentage === 100) return barColor = "#A1362F"
+        else if(percentage >= 50) return barColor = "#f4cd41";
+        else return barColor = "#fff";
+      }
+      if(type === "rengar") {
+        if(percentage === 100) return barColor = "#B97C4A"
+        else return barColor = "#fff"
+      }
+      if(type === "vlad") {
+        if(percentage === 100) return barColor = "#B24C45";
+        if(percentage >= 50) return barColor = "#B97C4A"
+        else return barColor = "#fff"
+      }
+      else return barColor = "#fff"
+    }
+    else return barColor = "#2D8FF3";
   }
 
   render() {
@@ -200,7 +376,8 @@ class Map extends Component {
 
 class App extends Component {
   state = {
-    liveData: {}
+    liveData: {},
+    itemData: {}
   }
 
   componentDidMount() {

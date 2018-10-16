@@ -1,0 +1,52 @@
+{
+    "Vladimir": {
+        "type": "vlad"
+    },
+    "Aatrox": {
+        "type": "aatrox"
+    },
+    "Rengar": {
+        "type": "rengar"
+    },
+    "Rumble": {
+        "type": "rumble"
+    },
+    "Yasuo": {
+        "type": "yasuo"
+    },
+    
+    "Akali": {
+        "type": "akali"
+    },
+    "Kennen": {
+        "type": "energy"
+    },
+    "Lee Sin": {
+        "type": "energy"
+    },
+    "Shen": {
+        "type": "energy"
+    },
+    "Zed": {
+        "type": "energy"
+    },
+
+    "Gnar": {
+        "type": "gnar"
+    },
+    "Kled": {
+        "type": "gnar"
+    },
+    "Rek'Sai": {
+        "type": "fury"
+    },
+    "Renekton": {
+        "type": "renek"
+    },
+    "Shyvana": {
+        "type": "gnar"
+    },
+    "Tryndamere": {
+        "type": "fury"
+    }    
+}
