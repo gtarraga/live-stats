@@ -40,6 +40,108 @@ function cTime(millisec) {
   return minutes + ":" + seconds;
 }
 
+class TeamInfo extends Component {
+  getPlayers = () => {
+    var playerStats = [];
+    var liveData = this.props.data;
+    var blue = false
+    if(this.props.side == "blue") {
+      var startNumber = 1;
+      blue = true;
+    } 
+    else var startNumber = 6;
+
+
+    for (var i = startNumber; i < startNumber + 5; i++) {
+      
+      playerStats.push(
+        <div>
+          <h4>{/\ \w+/.exec(liveData.playerStats[i].summonerName)}</h4>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+          }}>
+            <div className="championIcon" style={{
+              position: "relative",
+              backgroundImage: `url(https://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png)`,
+              backgroundSize: "115%",
+              backgroundPosition: "center",
+              width: "50px",
+              height: "50px",
+              borderRadius: "50%",
+            }}>
+              <span className="championLevel" style={{
+                // mirrors level position
+                // right: blue ? "" : "0",
+              }}>{liveData.playerStats[i].level}</span>
+            </div>
+            <div className="championScore" style={{margin: "10px"}}>
+              <img src={require('./assets/kills.png')} height="10px" margin="5px"></img>
+              {` ${liveData.playerStats[i].kills}/${liveData.playerStats[i].deaths}/${liveData.playerStats[i].assists}`}
+            </div>
+          </div>
+
+          <div className="statsBar" style={{
+            margin: "3px",
+          }}>
+            <div className="hpBar" style={{position: "relative"}}> 
+              <div style={{
+                height: "15px",
+                width: (liveData.playerStats[i].h * 100 / liveData.playerStats[i].maxHealth) + "%",
+                backgroundColor: "#4CAF50",
+              }}/>
+              <div className="barTitle">{`${liveData.playerStats[i].h}/${liveData.playerStats[i].maxHealth}`}</div>
+            </div>
+
+            <div className="manaBar" style={{position: "relative"}}> 
+              <div style={{
+                height: "15px",
+                width: (liveData.playerStats[i].p * 100 / liveData.playerStats[i].maxPower) + "%",
+                backgroundColor: "#2D8FF3",
+              }}/>
+              <div className="barTitle">{`${liveData.playerStats[i].p}/${liveData.playerStats[i].maxPower}`}</div>
+            </div>
+          </div>
+
+        </div>
+      );
+    }
+    return playerStats;
+  }
+
+  render() {
+    var liveData = this.props.data;
+    var blue = false
+    var teamStats = liveData.teamStats[blue ? 100 : 200];
+    if(this.props.side == "blue") var blue = true;
+
+    return(
+      <div>
+        {/\w+/.exec(liveData.playerStats[blue ? 1 : 6].summonerName)}
+        <div className="teamStats">
+          <div className="baron">
+            <img src={require('./assets/baron.png')} height="15px"></img>
+            {teamStats.baronsKilled}
+          </div>
+          <div className="dragon">
+            <img src={require('./assets/dragon.png')} height="15px"></img>
+            {teamStats.dragonsKilled}
+          </div>
+          <div className="tower">
+            <img src={require('./assets/tower.png')} height="15px"></img>
+            {teamStats.towersKilled}
+          </div>
+          <div className="inhibitor">
+            <img src={require('./assets/inhib.png')} height="15px"></img>
+            {teamStats.inhibitorsKilled}
+          </div>
+        </div>
+        {this.getPlayers()}
+      </div>
+    );
+  }
+}
+
 class ChampionIcon extends Component {
   render() {
     var liveData = this.props.data;
@@ -52,19 +154,8 @@ class ChampionIcon extends Component {
             <image _ngcontent-c5="" height="34" width="34" x="-3" y="-3" xlinkHref={`https://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png`}></image>
           </pattern>
         </defs>
-        <circle r="14" strokeWidth="1.5" cy={100- (liveData.playerStats[i].y * 100 / 15000) + "%"} cx={(liveData.playerStats[i].x * 100 / 15000) + "%"} stroke="rgba(58, 171, 195, 0.75)" stroke={i < 6 ? "rgba(48, 169, 222, 0.75)" : "rgba(222, 48, 48, 0.75)"} fill={`url(#icon-${liveData.playerStats[i].championName})`} filter={liveData.playerStats[i].h === 0 ? "url(#grayscale)" : "none"}></circle>
+        <circle r="14" strokeWidth="2" cy={100- (liveData.playerStats[i].y * 100 / 15000) + "%"} cx={(liveData.playerStats[i].x * 100 / 15000) + "%"} stroke="rgba(58, 171, 195, 0.75)" stroke={i < 6 ? "rgba(48, 169, 222, 0.75)" : "rgba(222, 48, 48, 0.75)"} fill={`url(#icon-${liveData.playerStats[i].championName})`} filter={liveData.playerStats[i].h === 0 ? "url(#grayscale)" : "none"}></circle>
       </g>
-
-      // <circle className={i < 6 ? "championIconBlue" : "championIconRed"} fill={`http://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png`} style={{
-      //   left: (liveData.playerStats[i].x * 100 / 14000 - 3.5) + "%",
-      //   bottom: (liveData.playerStats[i].y * 100 / 14000 - 3.5) + "%",
-      //   filter: liveData.playerStats[i].h === 0 ? "grayscale(75%)" : "none",
-      //   backgroundImage: `url(http://ddragon.leagueoflegends.com/cdn/8.19.1/img/champion/${liveData.playerStats[i].championName}.png)`,
-      //   backgroundSize: "30px",
-      //   backgroundPosition: "center",
-      //   WebkitTransform: "translate(-80%, 90%)",
-      //   // clear: "both",
-      // }}></circle>
     );
   }
 }
@@ -157,7 +248,9 @@ class App extends Component {
         {this.state.liveData.playerStats ?
           <header className="App-header">
             <div className="centered">
+              <TeamInfo side="blue" data={this.state.liveData} />
               <Map data={this.state.liveData} />
+              <TeamInfo side="red" data={this.state.liveData} />
             </div>
             <div style={{ fontSize: "1.5em", margin: "10px" }}>{/([A-Z\d]+\|)([A-Z\d]+\|)([A-Z\d]+\|)/.exec(this.state.liveData.generatedName)[0].slice(0,-1).replace("|"," vs ")} In game time: {this.state.liveData.time}</div>
             <div>{JSON.stringify(this.state.liveData, null, 4)}</div>

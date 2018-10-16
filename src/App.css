@@ -1,10 +1,10 @@
 html {
-  background-color: #282c34;
+  background-color: #232323;;
 }
 
 .App {
   /* text-align: center; */
-  background-color: #282c34;
+  background-color: #232323;;
 }
 
 .App-logo {
@@ -13,7 +13,7 @@ html {
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #232323;;
   /* min-height: 100vh; */
   /* display: flex;
   flex-direction: row;
@@ -35,6 +35,59 @@ html {
 
 .App-link {
   color: #61dafb;
+}
+
+.teamStats {
+  display: flex;
+  flex-direction: row;
+}
+
+.baron, .tower, .inhibitor, .dragon {
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
+  padding: 4px;
+  align-items: center;
+  font-weight: bold;
+}
+
+.baron img, .tower img, .inhibitor img, .dragon img {
+  margin-bottom: 5px;
+}
+
+.statsBar>div {
+  margin: 2px 0px;
+  border: 1px solid #555d64;
+  text-align: center;
+  width: 150px;
+}
+
+.barTitle {
+  position: absolute;
+  text-align: center;
+  line-height: 15px; 
+  /* line-height should be equal to bar height */
+  overflow: hidden;
+  color: #fff;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+.championLevel {
+  display: flex;
+  position: absolute;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 1px solid #555d64;
+  font-size: 10px;
+  line-height: 1;
+  width: 30%;
+  height: 30%;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  color: #fff;
 }
 
 @keyframes App-logo-spin {
