@@ -66,6 +66,7 @@ html {
   position: absolute;
   text-align: center;
   line-height: 15px; 
+  padding-right: 3px;
   /* line-height should be equal to bar height */
   overflow: hidden;
   color: #fff;
@@ -91,6 +92,16 @@ html {
   color: #fff;
 }
 
+.itemIcon {
+  flex-grow: 1;
+  width: 25%;
+  position: relative;
+  background-size: 115%;
+  background-position: center;
+  height: 27px;
+  border: 1px solid #555d64;
+}
+
 .itemNumber {
   display: flex;
   position: absolute;
@@ -100,12 +111,22 @@ html {
   border: 1px solid #555d64;
   font-size: 10px;
   line-height: 1;
-  width: 60%;
-  height: 60%;
+  width: 40%;
+  height: 51%;
   align-items: center;
   justify-content: center;
   background-color: black;
   color: #fff;
+  z-index: 1;
+}
+
+.goldCounter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 55%;
+  left: 15%;
 }
 
 .playerBuild {

@@ -54,75 +54,55 @@ class PlayerItems extends Component {
 
   getItems = () => {
     var itemBuild = [];
-    var stacks = {}
+    var stacks = [];
     var items = this.props.data.items;
-    var itemSlots = 6;
     var itemsData = this.state.itemsData;
+    var trinketList = [];
+
+    Object.keys([itemsData][0]).forEach(k => {
+      if([itemsData][0][k].tags.includes("Trinket")) trinketList.push(parseInt(k))
+    })
     
     items.sort((a, b) => {
       return itemsData[b].gold.total-itemsData[a].gold.total
     });
 
 
-
-    for(let i = 0; i < itemSlots; i++) {
+    for(let i = 0; i < items.length; i++) {
       // If the item is a trinket it stores it so we can position it differently later
-      if(items[i] === 3363 || items[i] === 3364 || items[i] === 3520 || items[i] === 3340 || items[i] === 3513 || items[i] === 2052) {
-        this.state.trinket= items[i];
-        itemSlots++
-      }
+      if(trinketList.includes(items[i])) this.state.trinket= items[i]
 
       else {
         // Bundles items into stacks when applicable
         if(items[i] !== undefined && itemsData[items[i]].stacks) {
-          if(stacks[items[i]]) stacks[items[i]] --;
-          else stacks[+items[i]] = itemsData[items[i]].stacks --
+          if(!stacks.includes(items[i])) {
+            stacks.push(items[i]) ;
 
-          let count = items.filter(item => {
-            return item === items[i];
-          }).length;
+            let count = items.filter(item => {
+              return item === items[i];
+            }).length;
 
-          if(stacks[items[i]] === itemsData[items[i]].stacks-1) {
             itemBuild.push(
               <div className="itemIcon" style={{
-                flexGrow: 1,
-                width: "25%",
-                position: "relative",
                 backgroundImage: `url(https://ddragon.leagueoflegends.com/cdn/8.19.1/img/item/${items[i]}.png)`,
-                backgroundSize: "115%",
-                backgroundPosition: "center",
-                height: "27px",
-                border: "1px solid #555d64",
               }}>
                 {count > 1 ? <span className="itemNumber">{count}</span> : ""}
-              </div>)
+              </div>
+            )
           }
-          else itemSlots++
-          stacks[items[i]] --;
         }
         else itemBuild.push(
           <div className="itemIcon" style={{
-            flexGrow: 1,
-            width: "25%",
-            position: "relative",
-            backgroundImage: items[i] ? `url(https://ddragon.leagueoflegends.com/cdn/8.19.1/img/item/${items[i]}.png)` : "",
-            backgroundSize: "115%",
-            backgroundPosition: "center",
-            height: "27px",
-            border: "1px solid #555d64",
+            backgroundImage: `url(https://ddragon.leagueoflegends.com/cdn/8.19.1/img/item/${items[i]}.png)`,
           }}></div>
-        // if(items[i] == undefined) itemBuild.push(
-        //   <div className="itemIcon" style={{
-        //     position: "relative",
-        //     height: "20px",
-        //     width: "20px",
-        //     border: "1px solid #555d64",
-        //     content: " ",
-        //   }}> </div>
-        // )
         )
       }
-
+    }
+    while(itemBuild.length > 6) {
+      itemBuild.pop();
+    }
+    while(itemBuild.length < 6) {
+      itemBuild.push(<div className="itemIcon" />)
     }
 
     return itemBuild;
@@ -142,22 +122,18 @@ class PlayerItems extends Component {
             position: "relative",
             marginLeft: "8px",
           }}>
+            {/* trinket icon */}
             <div className="itemIcon" style={{
-              width: "100%",
+              width: "93%",
               backgroundImage: `url(https://ddragon.leagueoflegends.com/cdn/8.19.1/img/item/${this.state.trinket}.png)`,
-              backgroundSize: "115%",
-              backgroundPosition: "center",
-              height: "27px",
-              border: "1px solid #555d64",
             }}></div>
-            <div style={{
-              left: "-3px",
-              position: "absolute",
-              top: "63%",
-            }}>
+
+            {/* gold counter */}
+            <div className="goldCounter">
               <img src={require('./assets/player-gold.png')} alt="player gold icon" style={{
                 marginRight: "2px",
-                height: "10px",
+                height: "13px",
+                width: "13px",
               }}></img>
               {this.props.data.cg}
             </div>
@@ -176,10 +152,10 @@ class TeamInfo extends Component {
     var liveData = this.props.data;
     if(this.props.side === "blue") var startNumber = 1; 
     else startNumber = 6;
-
-
-    for (var i = startNumber; i < startNumber + 5; i++) {
-      
+    
+    
+    
+    for (var i = startNumber; i < startNumber + 5; i++) {      
       playerStats.push(
         <div>
           <h4>{/ \w+/.exec(liveData.playerStats[i].summonerName)}</h4>
@@ -214,7 +190,7 @@ class TeamInfo extends Component {
           </div>
 
           <div className="statsBar" style={{
-            margin: "3px",
+            
           }}>
             <div className="hpBar" style={{position: "relative"}}> 
               <div style={{
@@ -226,9 +202,9 @@ class TeamInfo extends Component {
             </div>
 
             <div className="manaBar" style={{position: "relative"}}> 
-              <div style={{
+             <div style={{
                 height: "15px",
-                width: (liveData.playerStats[i].p * 100 / liveData.playerStats[i].maxPower) + "%",
+                width:  (liveData.playerStats[i].maxPower === 0 ? "0%" : (liveData.playerStats[i].p * 100 / liveData.playerStats[i].maxPower) + "%"),
                 backgroundColor: this.getResourceBar(i),
               }}/>
               <div className="barTitle" color="#999999">{`${liveData.playerStats[i].p}/${liveData.playerStats[i].maxPower}`}</div>
@@ -341,10 +317,7 @@ class Map extends Component {
   getIcons = () => {
     var icons = [];
     var liveData = this.props.data;
-    console.log(this.props.liveData);
-
     for (var i = 1; i < 11; i++) {
-      
       icons.push(
         <ChampionIcon data={liveData} player={i}/>
       );
