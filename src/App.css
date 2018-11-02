@@ -2,6 +2,14 @@ html {
   background-color: #232323;;
 }
 
+TeamInfo {
+  flex-grow: 1;
+}
+
+Map {
+  flex-grow: 2;
+}
+
 .App {
   /* text-align: center; */
   background-color: #232323;;
@@ -14,13 +22,6 @@ html {
 
 .App-header {
   background-color: #232323;;
-  /* min-height: 100vh; */
-  /* display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center; */
-  /* font-size: calc(10px + 2vmin); */
-
   white-space: pre; 
   font-family: monospace;
   color: white;
@@ -29,6 +30,7 @@ html {
 .centered {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
 }
@@ -59,14 +61,14 @@ html {
   margin: 2px 0px;
   border: 1px solid #555d64;
   text-align: center;
-  width: 150px;
+  width: 100%- 2px;
 }
 
 .barTitle {
   position: absolute;
   text-align: center;
   line-height: 15px; 
-  padding-right: 3px;
+  /* padding-right: 3px; */
   /* line-height should be equal to bar height */
   overflow: hidden;
   color: #fff;
@@ -74,6 +76,15 @@ html {
   right: 0;
   left: 0;
   top: 0;
+}
+
+.championIcon {
+  position: relative;
+  background-size: 115%;
+  background-position: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 
 .championLevel {
@@ -92,7 +103,15 @@ html {
   color: #fff;
 }
 
-.itemIcon {
+.extraBuild {
+  flex-grow: 1;
+  width: 25%;
+  align-items: center;
+  position: relative;
+  margin-left: 8px;
+}
+
+.itemIcon, .trinketIcon {
   flex-grow: 1;
   width: 25%;
   position: relative;
@@ -120,13 +139,26 @@ html {
   z-index: 1;
 }
 
+.goldCounter::before {
+  content: "";
+  background-image: url("./assets/player-gold.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom;
+  margin-top: 2px;
+  width: 11px;
+  height: 11px;
+  display: block;
+}
+
 .goldCounter {
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  position: absolute;
-  top: 55%;
-  left: 15%;
+  justify-content: center;
+  align-self: center;
+  bottom: 0;
 }
 
 .playerBuild {
